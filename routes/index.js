@@ -36,6 +36,36 @@ router.post("/postproduct", async function (req, res, next) {
   res.send({ message: "success" });
 });
 
+//get product category
+router.post("/getproduct_cat", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("products")
+    .find({ cartegory: req.body.cartegory })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items });
+  } else {
+    res.send({ message: "no records" });
+  }
+});
+
+//get product by id
+router.post("/getproduct_by_id", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("products")
+    .find({ _id: ObjectId(req.body.location) })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items });
+  } else {
+    res.send({ message: "no records" });
+  }
+});
+
 //update product
 router.post("/updateproduct", async function (req, res, next) {
   console.log(req.body);
