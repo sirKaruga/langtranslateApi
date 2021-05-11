@@ -29,11 +29,43 @@ function insert(dta, colctn) {
     }
   );
 }
-
 //end insert
+
+////////////////////////
+/////////////////////////
+//routes
 router.post("/postproduct", async function (req, res, next) {
   insert(req.body, "products");
   res.send({ message: "success" });
+});
+
+//receive order
+router.post("/process_order", async function (req, res, next) {
+  insert(req.body, "orders");
+  res.send({ message: "success" });
+});
+
+//get product by id
+router.post("/getproduct_cart_products", async function (req, res, next) {
+  //console.log(req.body.products);
+  var dbVitals = await myDb();
+  var fullCart = [];
+  req.body.products.forEach(async (element) => {
+    const item = await dbVitals.db
+      .collection("products")
+      .findOne({ _id: ObjectId(element) });
+    fullCart.push(item);
+    //console.log(item);
+  });
+  // dbVitals.client.close();
+
+  res.send({ fullCart });
+
+  // if (items.length >= 1) {
+  //   res.send({ items });
+  // } else {
+  //   res.send({ message: "no records" });
+  // }
 });
 
 //get product category
@@ -110,6 +142,22 @@ router.post("/vendorregister", async function (req, res, next) {
   }
 });
 
+//customerregister
+router.post("/customerregister", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("customers")
+    .find({ phone: req.body.phone })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ message: "User exists" });
+  } else {
+    insert(req.body, "customers");
+    res.send({ message: "success" });
+  }
+});
+
 //brief content
 router.post("/briefContent", async function (req, res, next) {
   console.log(req.body);
@@ -131,6 +179,37 @@ router.post("/vendorlogin", async function (req, res, next) {
   var dbVitals = await myDb();
   const items = await dbVitals.db
     .collection("vendors")
+    .find({ phone: req.body.user, password: req.body.password })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ message: "success" });
+  } else {
+    res.send({ message: "User Does not exist" });
+  }
+});
+
+//find_customer
+router.post("/find_customer", async function (req, res, next) {
+  console.log(req.body);
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("customers")
+    .find({ phone: req.body.phone })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items });
+  } else {
+    res.send({ message: "User Does not exist" });
+  }
+});
+
+//customerlogin
+router.post("/customerlogin", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("customers")
     .find({ phone: req.body.user, password: req.body.password })
     .toArray();
   dbVitals.client.close();
