@@ -2,7 +2,10 @@ var express = require("express");
 var router = express.Router();
 var ObjectId = require("mongodb").ObjectID;
 var MongoClient = require("mongodb").MongoClient;
-var url = "mongodb://localhost:27017/";
+//var url = "mongodb://localhost:27017/";
+
+var url =
+  "mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/wasilisha?retryWrites=true&w=majority";
 
 var myDb = async function () {
   const client = await MongoClient.connect(url, {
@@ -35,7 +38,12 @@ function insert(dta, colctn) {
 /////////////////////////
 //routes
 router.post("/postproduct", async function (req, res, next) {
-  insert(req.body, "products");
+  insert(req.body, "unfiltered");
+  res.send({ message: "success" });
+});
+
+//tester
+router.post("/tester", async function (req, res, next) {
   res.send({ message: "success" });
 });
 
@@ -49,6 +57,33 @@ router.post("/process_order", async function (req, res, next) {
 router.post("/place_order", async function (req, res, next) {
   insert(req.body, "orders");
   res.send({ message: "success" });
+});
+
+///fetch_orders
+router.post("/fetch_orders", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db.collection("orders").find().toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items });
+  } else {
+    res.send({ message: "no records" });
+  }
+});
+
+///get vendor name
+router.post("/get_vendor_name", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db
+    .collection("vendors")
+    .find({ phone: req.body.phone })
+    .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items });
+  } else {
+    res.send({ message: "no records" });
+  }
 });
 
 //get product by id
@@ -100,13 +135,14 @@ router.post("/getproduct_by_id", async function (req, res, next) {
 
 //update product
 router.post("/updateproduct", async function (req, res, next) {
+  console.log(req.body._id);
   MongoClient.connect(
     url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     function (err, db) {
       if (err) throw err;
       var dbo = db.db("wasilisha");
-      var myquery = { _id: req.body._id };
+      var myquery = { _id: ObjectId(req.body._id) };
       var newvalues = {
         $set: {
           name: req.body.name,
@@ -165,6 +201,30 @@ router.post("/briefContent", async function (req, res, next) {
     .collection("products")
     .find({ phone: req.body.user })
     .toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items: items });
+  } else {
+    res.send({ message: "no records" });
+  }
+});
+
+//unfiltered items
+router.post("/all_unfiltered", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db.collection("unfiltered").find().toArray();
+  dbVitals.client.close();
+  if (items.length >= 1) {
+    res.send({ items: items });
+  } else {
+    res.send({ message: "no records" });
+  }
+});
+
+//all products content
+router.post("/all_products", async function (req, res, next) {
+  var dbVitals = await myDb();
+  const items = await dbVitals.db.collection("products").find().toArray();
   dbVitals.client.close();
   if (items.length >= 1) {
     res.send({ items: items });
@@ -245,6 +305,78 @@ router.post("/customerlogin", async function (req, res, next) {
   } else {
     res.send({ message: "User Does not exist" });
   }
+});
+
+//delete product
+router.post("/delete_product", async function (req, res, next) {
+  console.log(req.body.deleteID);
+  var dbVitals = await myDb();
+  var myquery = { _id: ObjectId(req.body.deleteID) };
+  const items = await dbVitals.db
+    .collection("products")
+    .deleteOne(myquery, function (err, obj) {
+      if (err) {
+        console.log(err);
+      }
+      if (obj) {
+        res.send({ message: "success" });
+      }
+    });
+
+  items;
+});
+
+//reject unfiltered product
+router.post("/delete_unfiltered", async function (req, res, next) {
+  console.log(req.body.deleteID);
+  var dbVitals = await myDb();
+  var myquery = { _id: ObjectId(req.body.deleteID) };
+  const items = await dbVitals.db
+    .collection("unfiltered")
+    .deleteOne(myquery, function (err, obj) {
+      if (err) {
+        console.log(err);
+      }
+      if (obj) {
+        res.send({ message: "success" });
+      }
+    });
+
+  items;
+});
+
+//approve unfiltered product
+router.post("/approve_unfiltered", async function (req, res, next) {
+  console.log(req.body.filterID);
+
+  async function delP() {
+    var dbVitals = await myDb();
+    var myquery = { _id: ObjectId(req.body.deleteID) };
+    const items = await dbVitals.db
+      .collection("unfiltered")
+      .deleteOne(myquery, function (err, obj) {
+        if (err) {
+          console.log(err);
+        }
+        if (obj) {
+          console.log("delete success");
+        }
+      });
+    items;
+  }
+  async function collector() {
+    var dbVitals = await myDb();
+    const items = await dbVitals.db
+      .collection("unfiltered")
+      .findOne({ _id: ObjectId(req.body.filterID) });
+    dbVitals.client.close();
+    insert(items, "products");
+  }
+
+  ////
+  collector();
+  delP();
+  res.send({ message: "success" });
 });
 
 router.get("/delete", async function (req, res, next) {
