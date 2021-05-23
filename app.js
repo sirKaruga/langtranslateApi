@@ -17,7 +17,7 @@ app.set("view engine", "jade");
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://wasilisha.com"],
+    origin: ["http://localhost:3000", "https://wasilishaafrica.herokuapp.com"],
     credentials: true,
   })
 );
