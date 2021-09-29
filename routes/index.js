@@ -2,9 +2,9 @@ var express = require("express");
 var router = express.Router();
 var ObjectId = require("mongodb").ObjectID;
 var MongoClient = require("mongodb").MongoClient;
-//var url = "mongodb://localhost:27017/";
-var url =
-  "mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/temporary?retryWrites=true&w=majority";
+var url = "mongodb://localhost:27017/";
+//var url =
+// ("mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/temporary?retryWrites=true&w=majority");
 var myDb = async function () {
   const client = await MongoClient.connect(url, {
     useNewUrlParser: true,
@@ -32,7 +32,43 @@ function insert(dta, colctn) {
 }
 //end insert
 
-/////////////////////////
+//*************************************************************************************************************************************************** */
+// var appointments = {// };
+// router.get("/fix", async function (req, res, next) {
+//   Object.entries(appointments).forEach((item) => {
+//     if (typeof item[1] === "object") {
+//       Object.entries(item[1]).forEach((item2) => {
+//         //console.log("passwords." + item2[0] + " => " + item2[1]);
+
+//         insert(
+//           {
+//             key: item[0] + "." + item2[0],
+//             English: item2[1],
+//             Kiswahili: "",
+//             French: "",
+//             Indonesia: "",
+//           },
+//           "register_form"
+//         );
+//       });
+//     } else {
+//       //console.log(item[0] + " => " + item[1]);
+//       insert(
+//         {
+//           key: item[0],
+//           English: item[1],
+//           Kiswahili: "",
+//           French: "",
+//           Indonesia: "",
+//         },
+//         "register_form"
+//       );
+//     }
+//   });
+
+//   res.send({ message: "form register populated" });
+// });
+//*************************************************************************************************************************************************** */
 //routes
 router.post("/postproduct", async function (req, res, next) {
   insert(req.body, "items");
