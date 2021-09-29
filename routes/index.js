@@ -2,9 +2,9 @@ var express = require("express");
 var router = express.Router();
 var ObjectId = require("mongodb").ObjectID;
 var MongoClient = require("mongodb").MongoClient;
-var url = "mongodb://localhost:27017/";
-//var url =
-// ("mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/temporary?retryWrites=true&w=majority");
+//var url = "mongodb://localhost:27017/";
+var url =
+  "mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/temporary?retryWrites=true&w=majority";
 var myDb = async function () {
   const client = await MongoClient.connect(url, {
     useNewUrlParser: true,
