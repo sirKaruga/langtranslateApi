@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var ObjectId = require("mongodb").ObjectID;
 var MongoClient = require("mongodb").MongoClient;
+var unirest = require("unirest");
 //var url = "mongodb://localhost:27017/";
 var url =
   "mongodb+srv://dennis:karuga@cluster0.0mtvw.mongodb.net/temporary?retryWrites=true&w=majority";
@@ -103,6 +104,25 @@ router.post("/record", async function (req, res, next) {
 });
 
 ///get item
+router.get("/", async function (req, res, next) {
+  
+  var req = unirest("GET", "https://sandbox.safaricom.co.ke/oauth/v1/generate");
+
+  req.query({
+    grant_type: "client_credentials",
+  });
+
+  req.headers({
+    Authorization:
+      "Basic SWZPREdqdkdYM0FjWkFTcTdSa1RWZ2FTSklNY001RGQ6WUp4ZVcxMTZaV0dGNFIzaA==",
+  });
+
+  req.end((res) => {
+    if (res.error) throw new Error(res.error);
+    console.log(res.body);
+  });
+});
+
 router.get("/record", async function (req, res, next) {
   var dbVitals = await myDb();
   //get items

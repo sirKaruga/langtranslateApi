@@ -17,7 +17,7 @@ app.set("view engine", "jade");
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://langtranslation.herokuapp.com"],
+    origin: ["http://localhost:3000", "https://langtranslation.herokuapp.com"],
     credentials: true,
   })
 );
