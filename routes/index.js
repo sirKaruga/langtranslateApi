@@ -68,14 +68,6 @@ function insert(dta, colctn) {
 
 //   res.send({ message: "form register populated" });
 // });
-router.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
 //*************************************************************************************************************************************************** */
 //routes
 router.post("/postproduct", async function (req, res, next) {
