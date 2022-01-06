@@ -71,7 +71,7 @@ function insert(dta, colctn) {
 //*************************************************************************************************************************************************** */
 //routes
 router.post("/postproduct", async function (req, res, next) {
-  insert(req.body, "items");
+  insert(req.body, "arorganisation");
   res.send({ message: "success" });
 });
 
@@ -107,7 +107,10 @@ router.post("/record", async function (req, res, next) {
 router.get("/record", async function (req, res, next) {
   var dbVitals = await myDb();
   //get items
-  const items2 = await dbVitals.db.collection("items").find().toArray();
+  const items2 = await dbVitals.db
+    .collection("arorganisation")
+    .find()
+    .toArray();
   dbVitals.client.close();
   res.send(items2.reverse());
 });
@@ -117,12 +120,15 @@ router.post("/save", async function (req, res, next) {
   if (req.body.language !== "English") {
     var dbVitals = await myDb();
     dbVitals.db
-      .collection("items")
+      .collection("arorganisation")
       .updateOne(
         { key: req.body.key },
         { $set: { [req.body.language]: req.body.onEdit } }
       );
-    const items2 = await dbVitals.db.collection("items").find().toArray();
+    const items2 = await dbVitals.db
+      .collection("arorganisation")
+      .find()
+      .toArray();
     dbVitals.client.close();
     res.send(items2.reverse());
   } else {
